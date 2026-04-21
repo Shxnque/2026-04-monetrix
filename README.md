@@ -1,4 +1,4 @@
-# Sponsorname audit details
+# Monetrix audit details
 - Total Prize Pool: XXX XXX USDC (Airtable: Total award pool)
     - HM awards: up to XXX XXX USDC (Airtable: HM (main) pool)
         - If no valid Highs or Mediums are found, the HM pool is $0 (🐺 C4 EM: adjust in case of tiered pools)
