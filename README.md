@@ -61,6 +61,7 @@ All user-facing contracts are UUPS-upgradeable; role authority is split across D
 # Scope
 
 ### Files in scope
+*Note: The nSLoC counts in the following table have been automatically generated and may differ depending on the definition of what a "significant" line of code represents. As such, they should be considered indicative rather than absolute representations of the lines involved in each contract.*
 
 | File                                                                                                                                                      | nSLOC    |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
