@@ -24,9 +24,9 @@
 
 ## V12 findings
 
-[V12](https://v12.zellic.io/) is [Zellic](https://zellic.io)'s in-house AI auditing tool. It is the only autonomous Solidity auditor that [reliably finds Highs and Criticals](https://www.zellic.io/blog/introducing-v12/). All issues found by V12 will be judged as out of scope and ineligible for awards.
+[V12](https://v12.zellic.io/) is [Zellic](https://zellic.io)'s in-house AI auditing tool. It is the only autonomous auditor that [reliably finds Highs and Criticals](https://www.zellic.io/blog/introducing-v12/). All issues found by V12 will be judged as out of scope and ineligible for awards.
 
-V12 findings will be posted in this section within the first two days of the competition.
+V12 findings can be viewed [here](https://v12.sh/runs/2147/public).
 
 ## Publicly known issues
 
