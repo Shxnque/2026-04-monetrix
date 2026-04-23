@@ -77,14 +77,14 @@ Governor / DEFAULT_ADMIN_ROLE sits behind a 24h timelock; UPGRADER behind 48h. W
 2. HyperCore precompile read semantic
 File: src/core/PrecompileReader.sol, MonetrixAccountant._readL1Backing
 
-3  Bridge + redemption coverage under bank-run
+3. Bridge + redemption coverage under bank-run
 Files: Vault.keeperBridge / requestRedeem / fundRedemptions / claimRedeem
 
-4 sUSDM cooldown + escrow isolation
+4. sUSDM cooldown + escrow isolation
 
-5 ActionEncoder / PrecompileReader libraries
+5. ActionEncoder / PrecompileReader libraries
 
-6  Decimal & unit-conversion boundary
+6. Decimal & unit-conversion boundary
 
 
 
