@@ -46,7 +46,7 @@ Governor / DEFAULT_ADMIN_ROLE sits behind a 24h timelock; UPGRADER behind 48h. W
 - **Previous audits:**  N/A
   - ✅ SCOUTS: If there are multiple report links, please format them in a list.
 - **Documentation:** 
-- **X/Twitter:** 🐺 EM: add a link to the sponsor's Twitter
+- **X/Twitter:** https://x.com/MonetrixFinance
 
 ---
 
