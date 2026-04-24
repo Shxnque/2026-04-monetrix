@@ -34,6 +34,7 @@ _Anything included in this section is considered a publicly known issue and is t
 
 - **Operator is a trusted hot-wallet role, not a trust-minimized actor.** Operator has immediate-effect authority over the hedge, bridge, yield, BLP and HLP pipelines. Risks arising purely from Operator compromise or inaction — e.g. refusing to call `fundRedemptions`, submitting invalid params to `withdrawFromBlp`, or manually toggling `setHlpDepositEnabled` — are mitigated off-chain via monitoring and a multi-Operator key policy, not by contract-level guards.
 - **A single UPGRADER role can replace all 9 proxy implementations (including the ACL itself).** Governor / `DEFAULT_ADMIN_ROLE` sits behind a 24h timelock; UPGRADER sits behind 48h. Role-splitting across the proxy set is a roadmap item, not a v1 requirement.
+- The contract parameters are not yet final and may be adjusted prior to deployment.
 
 # Overview
 
@@ -54,7 +55,7 @@ All user-facing contracts are UUPS-upgradeable; role authority is split across D
 ## Links
 
 - **Previous audits:** N/A
-- **Documentation:** N/A
+- **Documentation:** https://doc.monetrix.xyz/
 - **Website:** N/A
 - **X/Twitter:** https://x.com/MonetrixFinance
 
