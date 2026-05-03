@@ -316,9 +316,79 @@ contract C4Submission is Test {
     // ═══════════════════════════════════════════════════════════
 
     function test_submissionValidity() public {
-        // ─── Placeholder — replace with your PoC ───
-        // _deposit(user1, 10_000e6);
-        // assertEq(usdm.balanceOf(user1), 10_000e6);
-        // assertEq(usdc.balanceOf(address(vault)), 10_000e6);
+        // ═══════════════════════════════════════════════════════════
+        // BANKRUPT DEPOSIT — PoC
+        //
+        // Demonstrates: MonetrixVault.deposit() mints USDM 1:1 with
+        // ZERO solvency check. When the protocol is in a deficit state
+        // (totalBackingSigned < usdm.totalSupply), a new depositor's
+        // capital is socialized pro-rata onto the existing deficit.
+        //
+        // Setup:
+        //   1. user1 deposits $1M  → USDM supply = $1M, surplus = 0
+        //   2. Simulate $250K loss (e.g. hedge slippage / oracle event):
+        //      drain vault USDC by $250K  → surplus = -$250K (25% deficit)
+        //   3. user2 deposits $1M  during the deficit
+        //
+        // Expected (and confirmed by this PoC):
+        //   - vault.deposit() succeeds with NO revert.
+        //   - user2 owns $1M USDM but is entitled to only $875K of backing.
+        //   - Deterministic loss = D × S × d / (S + D) = 1M × 1M × 0.25 / 2M
+        //                        = $125,000.
+        // ═══════════════════════════════════════════════════════════
+
+        // ── Step 1: user1 deposits $1M; protocol is solvent ──
+        _deposit(user1, 1_000_000e6);
+        assertEq(usdm.totalSupply(), 1_000_000e6, "supply post-u1");
+        assertEq(usdc.balanceOf(address(vault)), 1_000_000e6, "vault usdc post-u1");
+        assertEq(accountant.surplus(), int256(0), "surplus pre-deficit");
+
+        // ── Step 2: induce a 25% deficit (loss of $250K of backing) ──
+        //    Pre-mock all L1 reads to 0 so totalBackingSigned == EVM USDC.
+        //    Then prank as vault and transfer $250K out — equivalent to
+        //    any real-world capital loss (hedge fail, HLP drawdown, oracle).
+        vm.prank(address(vault));
+        usdc.transfer(address(0xDEAD), 250_000e6);
+
+        assertEq(usdc.balanceOf(address(vault)), 750_000e6, "vault usdc post-loss");
+        assertEq(usdm.totalSupply(), 1_000_000e6, "supply unchanged post-loss");
+
+        int256 surplusAtDeficit = accountant.surplus();
+        assertEq(surplusAtDeficit, int256(-250_000e6), "surplus = -$250K (25% deficit)");
+        assertLt(surplusAtDeficit, int256(0), "protocol IS in deficit");
+
+        // ── Step 3: user2 deposits $1M — does it revert? ──
+        //    Per Shinren's Q1: NO solvency gate exists in deposit().
+        //    Per Shinren's Q3: Foundry test should confirm no revert.
+        _deposit(user2, 1_000_000e6);
+
+        // ── Confirm: deposit SUCCEEDED at deficit (no revert) ──
+        assertEq(usdm.balanceOf(user2), 1_000_000e6, "user2 got 1:1 USDM at deficit");
+
+        // ── Compute user2's pro-rata claim against actual backing ──
+        uint256 totalSupply  = usdm.totalSupply();              // 2M
+        uint256 totalBacking = uint256(int256(accountant.totalBackingSigned()));
+        // Backing = vault USDC ($750K + $1M new) = $1.75M
+        assertEq(totalBacking, 1_750_000e6, "backing post-u2");
+        assertEq(totalSupply,  2_000_000e6, "supply post-u2");
+
+        uint256 user2Paid    = 1_000_000e6;
+        uint256 user2Claim   = (usdm.balanceOf(user2) * totalBacking) / totalSupply;
+        uint256 user2Loss    = user2Paid - user2Claim;
+
+        // Closed-form: loss = D × S × d / (S + D) = 1M × 1M × 0.25 / 2M = 125_000e6
+        uint256 expectedLoss = (1_000_000e6 * 1_000_000e6 * 25) / (2_000_000e6 * 100);
+
+        assertEq(user2Claim,   875_000e6,  "user2 entitled to only $875K");
+        assertEq(user2Loss,    125_000e6,  "user2 loss = $125,000");
+        assertEq(user2Loss,    expectedLoss, "loss matches D*S*d/(S+D)");
+
+        // ── Audit trail ──
+        emit log_named_int    ("surplus at deposit time (negative = deficit)", surplusAtDeficit);
+        emit log_named_uint   ("user2 USDC paid                              ", user2Paid);
+        emit log_named_uint   ("user2 USDM received                          ", usdm.balanceOf(user2));
+        emit log_named_uint   ("user2 pro-rata claim against backing         ", user2Claim);
+        emit log_named_uint   ("user2 deterministic loss                     ", user2Loss);
+        emit log_named_uint   ("loss-formula validation D*S*d/(S+D)          ", expectedLoss);
     }
 }
